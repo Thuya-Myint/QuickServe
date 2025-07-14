@@ -3,7 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const NotificationService = require("./src/service/notification.service");
+const TableOrderService = require("./src/service/tableOrder.service");
 
 dotenv.config();
 
@@ -13,7 +13,10 @@ const PORT = process.env.PORT || 8080;
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: [
+            "http://localhost:3000",
+            "http://localhost:5173"
+        ],
         methods: ["GET", "POST"]
     }
 });
@@ -31,10 +34,10 @@ mongoose.connect(MongoURI, {
 io.on("connection", async (socket) => {
     console.log("Client connected:", socket.id);
 
-    const notificationService = new NotificationService();
+    const tableOrderService = new TableOrderService();
 
     try {
-        const allNotifications = await notificationService.findAllNotification();
+        const allNotifications = await tableOrderService.findAllNotification();
         socket.emit("chat-history", allNotifications);
     } catch (err) {
         console.error("Error fetching notifications:", err);
@@ -42,7 +45,7 @@ io.on("connection", async (socket) => {
 
     socket.on("send-notification", async (data) => {
         try {
-            const saved = await notificationService.createNotification(data);
+            const saved = await tableOrderService.createNotification(data);
             io.emit("new-notification", saved);
         } catch (err) {
             console.error("Error saving notification:", err);
