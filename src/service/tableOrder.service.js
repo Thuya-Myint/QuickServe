@@ -1,4 +1,4 @@
-const notificationModelFactory = require("../models/notification.model");
+const notificationModelFactory = require("../models/tableOrder.model");
 const { getCurrentDate } = require("../helper/common.helper");
 
 class NotificationService {
