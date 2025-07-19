@@ -10,3 +10,7 @@ const createTableOrder = validate({
         })
     }),
 });
+
+module.exports = {
+    createTableOrder
+}
