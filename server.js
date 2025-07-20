@@ -1,12 +1,14 @@
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const TableOrderService = require("./src/service/tableOrder.service");
-
+const initializeSocket = require("./src/socket");
+const configs = require("./src/config");
+const bodyParser = require('body-parser');
+const compression = require('compression');
 dotenv.config();
+
 
 const app = express();
 const server = http.createServer(app);
@@ -19,7 +21,11 @@ const allowedOrigins = [
     "https://quick-serve-admin.vercel.app",
 ];
 
-// Middleware: Allow listed frontend origins
+app.use(express.json());
+app.use(compression());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -31,56 +37,15 @@ app.use(cors({
     credentials: true,
 }));
 
-// Parse JSON if needed
-app.use(express.json());
+app.use("/api/v1", require("./src/routes"));
 
-// Initialize Socket.IO with CORS
-const io = new Server(server, {
-    cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST"],
-        credentials: true,
-    }
-});
-
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(configs.MONGODBURI)
     .then(() => console.log("✅ MongoDB connected"))
     .catch((err) => console.error("❌ MongoDB error:", err));
 
-// WebSocket handlers
-io.on("connection", async (socket) => {
-    console.log(`🔌 Client connected: ${socket.id}`);
+// Initialize socket with the HTTP server and allowed origins
+initializeSocket(server, allowedOrigins);
 
-    const tableOrderService = new TableOrderService();
-
-    // Send chat history
-    try {
-        const allNotifications = await tableOrderService.findAllNotification();
-        socket.emit("chat-history", allNotifications);
-    } catch (err) {
-        console.error("❌ Error fetching notifications:", err);
-    }
-
-    // New notification handler
-    socket.on("send-notification", async (data) => {
-        try {
-            const saved = await tableOrderService.createNotification(data);
-            io.emit("new-notification", saved); // Broadcast to all
-        } catch (err) {
-            console.error("❌ Error saving notification:", err);
-        }
-    });
-
-    socket.on("disconnect", () => {
-        console.log(`🔌 Client disconnected: ${socket.id}`);
-    });
-});
-
-// Start the server
 server.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

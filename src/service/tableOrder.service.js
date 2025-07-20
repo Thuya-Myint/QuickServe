@@ -1,19 +1,19 @@
-const notificationModelFactory = require("../models/tableOrder.model");
+const tableOrderModelFactory = require("../models/tableOrder.model");
 const { getCurrentDate } = require("../helper/common.helper");
 
-class NotificationService {
+class TableOrderService {
     constructor() {
-        this.notificationCollectionName = `notification${getCurrentDate()}`;
-        this.notificationModel = notificationModelFactory(this.notificationCollectionName);
+        this.tableOrderCollectionName = `TableOrder${getCurrentDate()}`;
+        this.tableOrderModel = tableOrderModelFactory(this.tableOrderCollectionName);
     }
 
-    async createNotification(notification) {
-        return await this.notificationModel.create(notification);
+    async createTableOrder(notification) {
+        return await this.tableOrderModel.create(notification);
     }
 
-    async findAllNotification() {
-        return await this.notificationModel.find().sort({ timestamp: -1 }).limit(100);
+    async findAllTableOrder() {
+        return await this.tableOrderModel.find().sort({ timestamp: -1 }).limit(100);
     }
 }
 
-module.exports = NotificationService;
+module.exports = TableOrderService;

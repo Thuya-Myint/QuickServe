@@ -1,16 +1,8 @@
-const { Joi, validate } = require("express-validation");
+const Joi = require("joi");
 
-const createTableOrder = validate({
-    body: Joi.object({
-        companyId: Joi.string().optional().messages({
-            "string.base": "companyId must be a string"
-        }),
-        eventId: Joi.number().optional().messages({
-            "number.base": "eventId must be a number"
-        })
-    }),
+const createTableOrderSchema = Joi.object({
+    tableNo: Joi.string().trim().min(1).required(),
+    message: Joi.string().trim().min(1).required(),
 });
 
-module.exports = {
-    createTableOrder
-}
+module.exports = createTableOrderSchema

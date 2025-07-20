@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NotificationSchema = new mongoose.Schema({
+const TableOrderSchema = new mongoose.Schema({
     tableNo: String,
     message: String,
     timestamp: {
@@ -11,5 +11,5 @@ const NotificationSchema = new mongoose.Schema({
 
 // Export a function that returns the model based on collection name
 module.exports = (collectionName) => {
-    return mongoose.model(collectionName, NotificationSchema);
+    return mongoose.model(collectionName, TableOrderSchema);
 };
