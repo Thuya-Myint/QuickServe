@@ -52,13 +52,14 @@ const getUsers = async (_req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        // console.log("pass -----", password) 
+
+        console.log("pass -----", password, email)
         if (!name || !email || !password) {
             return res.status(400).json({ success: false, message: "Name , email and password are required." });
         }
 
         const user = await userService.findUserByEmail(email);
-        // console.log("User -------- ", user)
+        console.log("User -------- ", user)
         if (!user || !comparison(password, user.password)) {
             return res.status(401).json({ success: false, message: "User with this email not existed." });
         }

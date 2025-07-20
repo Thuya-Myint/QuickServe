@@ -40,9 +40,9 @@ const decryption = (encryptedText) => {
 // Secure comparison
 const comparison = (plainPassword, encryptedPassword) => {
     try {
-        // console.log("Plain ", plainPassword, "Encrypt ", encryptedPassword)
+        console.log("Plain ", plainPassword, "Encrypt ", encryptedPassword)
         const decrypted = decryption(encryptedPassword);
-        // console.log("decrypted ", decrypted)
+        console.log("decrypted ", decrypted)
         return crypto.timingSafeEqual(Buffer.from(plainPassword), Buffer.from(decrypted));
     } catch (_) {
         return false;
