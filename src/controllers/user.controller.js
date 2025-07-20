@@ -10,7 +10,7 @@ const userService = new UserService();
 const registerUser = async (req, res) => {
     try {
         const { email, password, name, ...rest } = req.body;
-        console.log("name ---- ", name)
+        // console.log("name ---- ", name)
 
         if (!email || !password || !name) {
             return res.status(400).json({ success: false, message: "Name, email and password  are required." });
