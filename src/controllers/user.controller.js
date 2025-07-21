@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
         });
 
         const { password: _, ...userSafe } = newUser.toObject ? newUser.toObject() : newUser;
-        res.status(201).json({ success: true, data: userSafe });
+        res.status(201).json({ success: true, data: userSafe ,message:"Successfully Registered!});
     } catch (error) {
         console.error(error)
         res.status(500).json({ success: false, message: error.message });
@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
         }
 
         const { password: _, ...userSafe } = user.toObject ? user.toObject() : user;
-        res.json({ success: true, message: "Login successful", data: userSafe });
+        res.json({ success: true, message: "Successfully Logged In!", data: userSafe });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
