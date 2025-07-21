@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
         });
 
         const { password: _, ...userSafe } = newUser.toObject ? newUser.toObject() : newUser;
-        res.status(201).json({ success: true, data: userSafe ,message:"Successfully Registered!});
+        res.status(201).json({ success: true, data: userSafe ,message:"Successfully Registered!"});
     } catch (error) {
         console.error(error)
         res.status(500).json({ success: false, message: error.message });
