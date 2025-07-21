@@ -13,6 +13,7 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 8080;
 const { Server } = require('socket.io');
 const io = new Server(server);
+const { validateRequest } = require("./src/middleware")
 const allowedOrigins = [
     "http://localhost:3000",
     "http://localhost:3001",
@@ -67,7 +68,7 @@ app.use(cors({
 }));
 
 app.use("/api/v1", require("./src/routes"));
-
+app.use(validateRequest)
 // Initialize socket with the HTTP server and allowed origins
 initializeSocket(server, allowedOrigins);
 

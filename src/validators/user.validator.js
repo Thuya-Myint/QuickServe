@@ -1,8 +1,7 @@
-const { validate } = require('express-validation');
-const Joi = require('joi');
+const { Joi, validate } = require('express-validation');
 
 // --- User Registration Schema ---
-const registerUserSchema = {
+const registerUserSchema = validate({
     body: Joi.object({
         name: Joi.string().min(3).max(30).required().messages({
             "string.empty": "Name is required.",
@@ -19,10 +18,10 @@ const registerUserSchema = {
         }),
         role: Joi.string().valid("user", "admin").optional(),
     }),
-};
+})
 
 // --- User Login Schema ---
-const loginUserSchema = {
+const loginUserSchema = validate({
     body: Joi.object({
         name: Joi.string().required().messages({
             "string.empty": "name is required.",
@@ -35,10 +34,10 @@ const loginUserSchema = {
             "string.email": "Email format is invalid.",
         }),
     }),
-};
+})
 
 // --- User Update Schema ---
-const updateUserSchema = {
+const updateUserSchema = validate({
     body: Joi.object({
         name: Joi.string().min(3).max(30).optional().messages({
             "string.min": "name must be at least 3 characters.",
@@ -54,10 +53,11 @@ const updateUserSchema = {
     }).min(1).messages({
         "object.min": "At least one field must be provided for update.",
     }),
-};
+}
+)
 
 module.exports = {
-    registerUserSchema: validate(registerUserSchema),
-    loginUserSchema: validate(loginUserSchema),
-    updateUserSchema: validate(updateUserSchema),
+    registerUserSchema: registerUserSchema,
+    loginUserSchema: loginUserSchema,
+    updateUserSchema: updateUserSchema,
 };
