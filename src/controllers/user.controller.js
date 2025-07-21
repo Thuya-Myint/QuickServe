@@ -29,8 +29,8 @@ const registerUser = async (req, res) => {
             ...rest,
         });
 
-        const { password: _, ...userSafe } = newUser.toObject ? newUser.toObject() : newUser;
-        res.status(201).json({ success: true, data: userSafe, message: "Successfully Registered!" });
+        // const { password: _, ...userSafe } = newUser.toObject ? newUser.toObject() : newUser;
+        res.status(201).json({ success: true, data: newUser, message: "Successfully Registered!" });
     } catch (error) {
         console.error(error)
         res.status(500).json({ success: false, message: error.message });
@@ -61,11 +61,11 @@ const loginUser = async (req, res) => {
         const user = await userService.findUserByEmail(email);
         // console.log("User -------- ", user)
         if (!user || !comparison(password, user.password)) {
-            return res.status(401).json({ success: false, message: "User with this email not existed." });
+            return res.status(401).json({ success: false, message: "User not existed." });
         }
 
-        const { password: _, ...userSafe } = user.toObject ? user.toObject() : user;
-        res.json({ success: true, message: "Successfully Logged In!", data: userSafe });
+        // const { password: _, ...userSafe } = user.toObject ? user.toObject() : user;
+        res.json({ success: true, message: "Successfully Logged In!", data: user });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -81,8 +81,8 @@ const updateUser = async (req, res) => {
         }
         console.log("Body", req.body)
         const updatedUser = await userService.updateUser(req.params.id, updates);
-        const { password: _, ...userSafe } = updatedUser.toObject ? updatedUser.toObject() : updatedUser;
-        res.json({ success: true, data: userSafe });
+        // const { password: _, ...userSafe } = updatedUser.toObject ? updatedUser.toObject() : updatedUser;
+        res.json({ success: true, data: updatedUser });
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: error.message });
