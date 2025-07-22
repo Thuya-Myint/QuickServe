@@ -1,17 +1,16 @@
 const { Server } = require("socket.io");
-const Joi = require("joi");
 const sanitizeHtml = require("sanitize-html");
-const TableOrderService = require("../src/service/tableOrder.service");
+const TableOrderService = require("../service/tableOrder.service");
 
 // Validation schema with Joi
-const notificationSchema = require('./validators/table.validator')
+const notificationSchema = require('../validators/table.validator')
 
 function initializeSocket(server, allowedOrigins) {
     const io = new Server(server, {
         cors: {
-            origin: allowedOrigins,
-            methods: ["GET", "POST"],
-            credentials: true,
+            origin: '*',
+            methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"],
+            credentials: false,
         },
     });
 
