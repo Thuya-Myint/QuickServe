@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const TableOrderSchema = new mongoose.Schema({
     tableNo: String,
     message: String,
-    timestamp: {
+    createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        expires: 86400
     }
 });
 
