@@ -10,7 +10,7 @@ const getCurrentDate = (date = null) => {
     const YYYY = myanmarTime.getFullYear();
 
     const currentDate = `${dd}${MM}${YYYY}`;
-    console.log("current date", currentDate);
+    // console.log("current date", currentDate);
     return currentDate;
 };
 
