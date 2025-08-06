@@ -24,6 +24,7 @@ const allowedOrigins = [
     "https://quick-serve-admin.vercel.app",
 ];
 
+app.get("/", (req, res) => res.send("Api Start Working!"))
 // Connect to MongoDB
 mongoose
     .connect(configs.MONGODBURI)
