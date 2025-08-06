@@ -1,18 +1,41 @@
-FROM node:20-alpine
+# Use official Node.js LTS Alpine image
+FROM node:20-alpine AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files first to leverage Docker cache
+# Install build dependencies (if any native modules)
+RUN apk add --no-cache python3 make g++ bash
+
+# Copy package files separately for caching
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --production=false
 
-# Copy the rest of your app
+# Copy all source files
 COPY . .
 
-# Expose the port your app uses (adjust if needed)
-EXPOSE 3000
+# Build step (if you have any build step, e.g. TypeScript)
+# RUN npm run build
 
-# Use npm start as the container command
+# Production image: smaller, no build tools
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Copy only production dependencies
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy app source
+COPY --from=builder /app .
+
+# Drop root privileges for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+# Expose port your app listens on
+EXPOSE 8080
+
+# Start the app
 CMD ["npm", "start"]
