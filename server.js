@@ -28,7 +28,7 @@ app.get("/", (req, res) => res.send("Api Start Working!"))
 // Connect to MongoDB
 mongoose
     .connect(configs.MONGODBURI)
-    .then(() => console.log("✅ MongoDB connected"))
+    .then(() => console.log("✅ MongoDB is connected"))
     .catch((err) => {
         console.error("❌ MongoDB connection error:", err);
         process.exit(1); // Exit if DB connection fails
