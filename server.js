@@ -84,5 +84,5 @@ initializeSocket(server, allowedOrigins);
 
 // Start server
 server.listen(PORT, () => {
-    console.log(`Server listening on http://150.95.82.207:${PORT}`);
+    console.log(`Server listening on http://localhost:${PORT}`);
 });
