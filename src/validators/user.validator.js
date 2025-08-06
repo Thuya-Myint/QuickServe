@@ -1,4 +1,6 @@
-const { Joi, validate } = require('express-validation');
+
+const { Joi, validate } = require("express-validation");
+
 
 // --- User Registration Schema ---
 const registerUserSchema = validate({
@@ -26,8 +28,9 @@ const loginUserSchema = validate({
         name: Joi.string().required().messages({
             "string.empty": "name is required.",
         }),
-        password: Joi.string().required().messages({
+        password: Joi.string().min(6).required().messages({
             "string.empty": "Password is required.",
+            "string.min": "Password must be at least 6 characters long.",
         }),
         email: Joi.string().email().required().messages({
             "string.empty": "Email is required.",

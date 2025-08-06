@@ -40,4 +40,4 @@ jobs:
             docker pull thuyamyint/quickserve-shomyn:latest
             docker stop quickserve || true
             docker rm quickserve || true
-            docker run -d --name quickserve --restart unless-stopped -p 3000:3000 thuyamyint/quickserve-shomyn:latest
+            docker run -d --name quickserve --restart unless-stopped -p 8080:8080 thuyamyint/quickserve-shomyn:latest
