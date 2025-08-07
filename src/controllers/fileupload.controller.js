@@ -10,15 +10,16 @@ const { sanitizeFileName } = require("../helper/santize")
  */
 const uploadFileSingle = async (req, res) => {
     try {
+        const { uploadDir, subDir } = req.query
         if (!req.file) {
             return res.status(400).json({ success: false, error: "No file provided." });
         }
 
         const { originalname, buffer, mimetype } = req.file;
-        const userId = req.user?.id || "anonymous";
+        const userId = req.user?.id || Date.now();
         const result = await uploadToSupabase({
             file: buffer,
-            folder: `user-${userId}/avatar`,
+            folder: `${uploadDir}-${userId}/${subDir}`,
             filename: `${Date.now()}_${sanitizeFileName(originalname)}`,
             contentType: mimetype,
         });
