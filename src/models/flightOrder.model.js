@@ -59,7 +59,6 @@ const FlightOrderSchema = new mongoose.Schema({
         expires: 86400 // Auto-delete after 24 hours
     }
 });
-
 // Function to safely return/reuse the model for dynamic collections
 module.exports = (collectionName) => {
     if (mongoose.models[collectionName]) {
