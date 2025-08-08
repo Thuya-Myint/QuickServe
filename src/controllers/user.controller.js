@@ -1,8 +1,8 @@
-const UserService = require("../service/user.service");
+const UserService = require("../services/user.service");
 const {
     encryption,
     comparison,
-} = require("../helper/encryptDecrypt"); // adjust path if needed
+} = require("../helper/encryptDecrypt");
 
 const userService = new UserService();
 
