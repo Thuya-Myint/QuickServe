@@ -8,7 +8,7 @@ const notificationSchema = require('../validators/table.validator')
 function initializeSocket(server, allowedOrigins) {
     const io = new Server(server, {
         cors: {
-            origin: '*',
+            origin: allowedOrigins,
             methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"],
             credentials: false,
         },

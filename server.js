@@ -16,13 +16,14 @@ const server = http.createServer(app);
 
 const PORT = process.env.PORT || 8080;
 
-const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:5173",
-    "https://shomyn.asia",
-    "https://quick-serve-admin.vercel.app",
-];
+// const allowedOrigins = [
+//     "http://localhost:3000",
+//     "http://localhost:3001",
+//     "http://localhost:5173",
+//     "https://shomyn.asia",
+//     "https://quick-serve-admin.vercel.app",
+// ];
+const allowedOrigins = "*"
 
 app.get("/", (req, res) => res.send("Api Start Working!"))
 // Connect to MongoDB
@@ -35,19 +36,20 @@ mongoose
     });
 
 // Middleware
-app.use(
-    cors({
-        origin: function (origin, callback) {
-            // Allow requests with no origin like mobile apps or curl requests
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        credentials: false,
-    })
-);
+// app.use(
+//     cors({
+//         origin: function (origin, callback) {
+//             // Allow requests with no origin like mobile apps or curl requests
+//             if (!origin || allowedOrigins.includes(origin)) {
+//                 callback(null, true);
+//             } else {
+//                 callback(new Error("Not allowed by CORS"));
+//             }
+//         },
+//         credentials: false,
+//     })
+// );
+app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
