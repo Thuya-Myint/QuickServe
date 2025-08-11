@@ -166,11 +166,7 @@ async function notifyMenuChange() {
     try {
         const menuItems = await getCachedMenu();
         // console.log("dfaewr---------", menuItems)
-        const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
-            `${i + 1}. *${(item.title)}* - ${item.price} MMK`
-
-        ).join('\n');
-
+        const menuText = formatMenuByCategory(menuItems)
         for (const chatId of chatSubscribers) {
             try {
                 await bot.sendMessage(chatId, menuText, { parse_mode: 'Markdown' });
