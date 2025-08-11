@@ -18,7 +18,7 @@ async function getCachedMenu() {
     if (cachedMenu && now - cacheTimestamp < CACHE_TTL_MS) {
         return cachedMenu;
     }
-    cachedMenu = await Menu.find({ available: true, isDeleted: false }).sort({ title: 1 }).lean();
+    cachedMenu = await Menu.find({});
     cacheTimestamp = now;
     return cachedMenu;
 }
