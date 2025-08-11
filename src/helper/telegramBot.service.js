@@ -23,14 +23,40 @@ async function getCachedMenu() {
     return cachedMenu;
 }
 
-// Helper: format menu text for Telegram markdown
-function formatMenuText(items) {
+
+// Helper: format menu grouped by category
+function formatMenuByCategory(items) {
     if (!items.length) return "Menu is empty.";
+
+    // Group items by category
+    const grouped = items.reduce((acc, item) => {
+        if (!acc[item.category]) acc[item.category] = [];
+        acc[item.category].push(item);
+        return acc;
+    }, {});
+
+    // Format text with categories and their items
     let text = "📋 *Our Menu:*\n\n";
-    items.forEach((item, i) => {
-        text += `${i + 1}. *${item.title}* - ${item.price} MMK\n`;
-        if (item.description) text += `   ${item.description}\n`;
-    });
+
+    for (const [category, items] of Object.entries(grouped)) {
+        text += `*${category}*\n`; // Category header
+        items.forEach((item, i) => {
+            // If you have variants, adjust this to show them
+            if (item.variants && item.variants.length) {
+                // Show variants with prices
+                const variantText = item.variants
+                    .map(v => `${v.variant}: ${v.price} MMK`)
+                    .join(' / ');
+                text += `  - *${item.title}* — ${variantText}\n`;
+            } else {
+                // Simple price
+                text += `  - *${item.title}* — ${item.price || 'N/A'} MMK\n`;
+            }
+            if (item.description) text += `     _${item.description}_\n`;
+        });
+        text += '\n';
+    }
+
     return text;
 }
 
@@ -63,7 +89,7 @@ bot.onText(/\/menu(@\w+)?/, async (msg) => {
 
     try {
         const menuItems = await getCachedMenu();
-        const menuText = formatMenuText(menuItems);
+        const menuText = formatMenuByCategory(menuItems);
         await bot.sendMessage(msg.chat.id, menuText, { parse_mode: 'Markdown' });
     } catch (error) {
         console.error('Error fetching menu:', error);
