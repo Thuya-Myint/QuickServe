@@ -1,12 +1,22 @@
 const TelegramBot = require('node-telegram-bot-api');
 const Menu = require('../models/menu.model');
+const Subscriber = require('../models/subscriber.model')
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 // In-memory chat subscribers (consider persisting to DB in production)
 const chatSubscribers = new Set();
+async function loadSubscribers() {
+    const docs = await Subscriber.find({});
+    docs.forEach(doc => chatSubscribers.add(doc.chatId));
+}
 
+function addSubscriber(chatId) {
+    chatSubscribers.add(chatId);
+    Subscriber.updateOne({ chatId }, { chatId }, { upsert: true }).exec();
+}
+loadSubscribers();
 // Cache menu items for 60 seconds to reduce DB load
 let cachedMenu = null;
 let cacheTimestamp = 0;
@@ -36,7 +46,7 @@ function formatMenuByCategory(items) {
     }, {});
 
     // Format text with categories and their items
-    let text = "📋 *Our Menu:*\n\n";
+    let text = "📋 *Our Menu:*\n\n\n\n";
 
     for (const [category, items] of Object.entries(grouped)) {
         text += `*💠${category}*\n\n\n`; // Category header
@@ -60,10 +70,7 @@ function formatMenuByCategory(items) {
     return text;
 }
 
-// Save chatId subscriber (can be expanded to persistent DB)
-function addSubscriber(chatId) {
-    chatSubscribers.add(chatId);
-}
+
 
 // Check chat type (private, group, supergroup)
 function isChatSupported(chatType) {
@@ -106,47 +113,75 @@ bot.on('polling_error', (error) => {
 let notifyTimeout = null;
 let notifyPending = false;
 
+
+
+// async function notifyMenuChange() {
+//     try {
+//         notifyPending = true; // Mark notification requested
+
+//         // Clear previous timeout so we debounce properly
+//         if (notifyTimeout) {
+//             clearTimeout(notifyTimeout);
+//         }
+
+//         notifyTimeout = setTimeout(async () => {
+//             if (!notifyPending) {
+//                 notifyTimeout = null;
+//                 return;
+//             }
+
+//             notifyPending = false;
+
+//             const menuItems = await getCachedMenu();
+//             const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
+//                 `${i + 1}. *${item.title}* - ${item.price} MMK`
+//             ).join('\n');
+
+//             for (const chatId of chatSubscribers) {
+//                 try {
+//                     await bot.sendMessage(chatId, menuText, { parse_mode: 'Markdown' });
+//                 } catch (err) {
+//                     console.error(`Failed to send update to chat ${chatId}:`, err.message);
+//                 }
+//             }
+//             console.log(" will be notifed")
+//             notifyTimeout = null;
+
+//             // If a new notification was requested during send, schedule again
+//             if (notifyPending) {
+//                 console.log(" will be notifed")
+//                 notifyMenuChange();
+//             }
+//         }, 2000);
+
+//     } catch (error) {
+//         console.error('Error notifying menu change:', error);
+//     }
+// }
+
 async function notifyMenuChange() {
     try {
-        notifyPending = true; // mark that we want to notify
+        const menuItems = await getCachedMenu();
+        // console.log("dfaewr---------", menuItems)
+        const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
+            `${i + 1}. *${escapeMarkdown(item.title)}* - ${item.price} MMK`
 
-        if (notifyTimeout) {
-            // Already scheduled, just wait for it to fire
-            return;
+        ).join('\n');
+
+        for (const chatId of chatSubscribers) {
+            try {
+                await bot.sendMessage(chatId, menuText, { parse_mode: 'Markdown' });
+            } catch (err) {
+                console.error(`Failed to send update to chat ${chatId}:`, err.message);
+            }
         }
 
-        notifyTimeout = setTimeout(async () => {
-            if (!notifyPending) {
-                notifyTimeout = null;
-                return;
-            }
-
-            notifyPending = false;
-
-            const menuItems = await getCachedMenu();
-            const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
-                `${i + 1}. *${item.title}* - ${item.price} MMK`
-            ).join('\n');
-
-            for (const chatId of chatSubscribers) {
-                try {
-                    await bot.sendMessage(chatId, menuText, { parse_mode: 'Markdown' });
-                } catch (err) {
-                    console.error(`Failed to send update to chat ${chatId}:`, err.message);
-                }
-            }
-
-            notifyTimeout = null;
-
-            // If notifyPending got set again during sending, schedule next notification
-            if (notifyPending) {
-                notifyMenuChange();
-            }
-        }, 10000);
+        console.log("Menu update sent to all subscribers.");
 
     } catch (error) {
         console.error('Error notifying menu change:', error);
     }
 }
+
 
 module.exports = { bot, notifyMenuChange };

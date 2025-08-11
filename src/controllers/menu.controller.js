@@ -16,6 +16,7 @@ exports.batchInsert = async (req, res) => {
     try {
         // Optional: validate each item here (title, category, variants with price)
         const result = await MenuItem.insertMany(items, { ordered: false });
+        await telegramBot.notifyMenuChange();
         res.status(201).json({ insertedCount: result.length, insertedItems: result });
     } catch (err) {
         console.error('Batch insert error:', err);
