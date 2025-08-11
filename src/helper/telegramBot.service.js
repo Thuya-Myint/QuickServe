@@ -36,7 +36,7 @@ async function getCachedMenu() {
 
 // Helper: format menu grouped by category
 function formatMenuByCategory(items) {
-    if (!items.length) return "Menu is empty.";
+    if (!items.length) return "📭 *Menu is empty.*";
 
     // Group items by category
     const grouped = items.reduce((acc, item) => {
@@ -45,29 +45,32 @@ function formatMenuByCategory(items) {
         return acc;
     }, {});
 
-    // Format text with categories and their items
-    let text = "📋 *Our Menu:*\n\n\n\n";
+    let text = "📋 *Our Menu*\n━━━━━━━━━━━━━━\n\n";
 
-    for (const [category, items] of Object.entries(grouped)) {
-        text += `*💠${category}*\n\n\n`; // Category header
-        items.forEach((item, i) => {
-            // If you have variants, adjust this to show them
+    for (const [category, categoryItems] of Object.entries(grouped)) {
+        text += `💠 *${category}*\n`;
+        text += "━━━━━━━━━━\n";
+
+        categoryItems.forEach(item => {
             if (item.variants && item.variants.length) {
-                // Show variants with prices
+                // Show variants inline
                 const variantText = item.variants
-                    .map(v => `${v.variant}: ${v.price} MMK`)
-                    .join(' / ');
-                text += `  - *${item.title}* — ${variantText}\n`;
+                    .map(v => `_${v.variant}_ — ${v.price} MMK`)
+                    .join(" | ");
+                text += `• *${item.title}*\n   ${variantText}\n`;
             } else {
-                // Simple price
-                text += `  - *${item.title}* — ${item.price || 'N/A'} MMK\n`;
+                text += `• *${item.title}* — ${item.price || 'N/A'} MMK\n`;
             }
-            if (item.description) text += `     _${item.description}_\n`;
+
+            if (item.description) {
+                text += `   _${item.description}_\n`;
+            }
         });
-        text += '\n';
+
+        text += "\n"; // space between categories
     }
 
-    return text;
+    return text.trim();
 }
 
 
@@ -164,7 +167,7 @@ async function notifyMenuChange() {
         const menuItems = await getCachedMenu();
         // console.log("dfaewr---------", menuItems)
         const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
-            `${i + 1}. *${escapeMarkdown(item.title)}* - ${item.price} MMK`
+            `${i + 1}. *${(item.title)}* - ${item.price} MMK`
 
         ).join('\n');
 
