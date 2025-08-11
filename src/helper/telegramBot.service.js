@@ -104,17 +104,30 @@ bot.on('polling_error', (error) => {
 
 // Notify subscribers with optional rate-limiting (simple debounce example)
 let notifyTimeout = null;
+let notifyPending = false;
+
 async function notifyMenuChange() {
     try {
-        const menuItems = await getCachedMenu();
-        const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
-            `${i + 1}. *${item.title}* - ${item.price} MMK`
-        ).join('\n');
+        notifyPending = true; // mark that we want to notify
 
-        // Simple rate limit: batch notifications if called multiple times quickly
-        if (notifyTimeout) return;
+        if (notifyTimeout) {
+            // Already scheduled, just wait for it to fire
+            return;
+        }
 
         notifyTimeout = setTimeout(async () => {
+            if (!notifyPending) {
+                notifyTimeout = null;
+                return;
+            }
+
+            notifyPending = false;
+
+            const menuItems = await getCachedMenu();
+            const menuText = `📋 *Updated Menu:*\n\n` + menuItems.map((item, i) =>
+                `${i + 1}. *${item.title}* - ${item.price} MMK`
+            ).join('\n');
+
             for (const chatId of chatSubscribers) {
                 try {
                     await bot.sendMessage(chatId, menuText, { parse_mode: 'Markdown' });
@@ -122,8 +135,15 @@ async function notifyMenuChange() {
                     console.error(`Failed to send update to chat ${chatId}:`, err.message);
                 }
             }
+
             notifyTimeout = null;
+
+            // If notifyPending got set again during sending, schedule next notification
+            if (notifyPending) {
+                notifyMenuChange();
+            }
         }, 10000);
+
     } catch (error) {
         console.error('Error notifying menu change:', error);
     }
