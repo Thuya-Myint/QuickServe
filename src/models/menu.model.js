@@ -1,13 +1,17 @@
-// models/MenuItem.js
 const mongoose = require('mongoose');
 
+const VariantPriceSchema = new mongoose.Schema({
+    variant: { type: String, required: true }, // e.g., "Chicken", "Pork", "Prawn", or "Hot", "Cold"
+    price: { type: Number, required: true, min: 0 }
+}, { _id: false });
+
 const MenuItemSchema = new mongoose.Schema({
-    title: { type: String, required: true, trim: true },
-    description: { type: String, default: '', trim: true },
-    price: { type: Number, required: true, min: 0 }, // store price as cents (integer)
+    title: { type: String, required: true, trim: true },   // e.g. "ကုန်းဘောင်"
+    category: { type: String, required: true, trim: true }, // e.g. "Main Dishes Menu"
+    description: { type: String, default: '', trim: true }, // Optional description
+    variants: { type: [VariantPriceSchema], default: [] },  // List of prices by variant
     available: { type: Boolean, default: true },
-    imageUrl: { type: String, default: '' },
-    tags: [String], // e.g. ["vegan","spicy"]
+    tags: [String],                                         // Optional tags
 }, { timestamps: true });
 
-module.exports = mongoose.model('Menu', MenuItemSchema);
+module.exports = mongoose.model('MenuItem', MenuItemSchema);
