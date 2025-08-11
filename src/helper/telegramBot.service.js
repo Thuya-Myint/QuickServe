@@ -39,7 +39,7 @@ function formatMenuByCategory(items) {
     let text = "📋 *Our Menu:*\n\n";
 
     for (const [category, items] of Object.entries(grouped)) {
-        text += `*${category}*\n`; // Category header
+        text += `*💠${category}*\n\n\n`; // Category header
         items.forEach((item, i) => {
             // If you have variants, adjust this to show them
             if (item.variants && item.variants.length) {
@@ -123,7 +123,7 @@ async function notifyMenuChange() {
                 }
             }
             notifyTimeout = null;
-        }, 5000);
+        }, 10000);
     } catch (error) {
         console.error('Error notifying menu change:', error);
     }
