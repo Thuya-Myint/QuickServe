@@ -60,6 +60,7 @@ app.use(validateRequest);
 
 // API routes
 app.use("/api/v1", require("./src/routes"));
+require('./src/helper/telegramBot.service');
 
 // Health check endpoint (optional but recommended)
 app.get("/health", (req, res) => {

@@ -27,7 +27,11 @@ function initializeSocket(server, allowedOrigins) {
 
         socket.on("send-flight-order", async (data) => {
             // Validate input using Joi schema
+            console.log("data ---- ", data)
+            console.log("type", typeof createFlightOrderSchema); // Should be 'function'
+
             const { error, value } = createFlightOrderSchema.validate({ body: data }, { abortEarly: false });
+            console.log("value ", value)
             if (error) {
                 return socket.emit("error", { message: `Validation error: ${error.details.map(d => d.message).join(", ")}` });
             }
@@ -47,6 +51,7 @@ function initializeSocket(server, allowedOrigins) {
 
             try {
                 const savedOrder = await flightOrderService.createOrder(sanitizedData);
+
                 io.emit("new-flight-order", savedOrder); // Broadcast to all clients
             } catch (err) {
                 console.error("❌ Error saving flight order:", err);

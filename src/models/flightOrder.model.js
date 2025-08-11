@@ -7,14 +7,14 @@ const FlightOrderSchema = new mongoose.Schema({
         trim: true,
         match: [/^[A-Z]{2}\d{3,4}$/, "Invalid flight number format (e.g., AB1234)"]
     },
-    from: {
+    departure: {
         type: String,
         required: [true, "Departure airport code is required"],
         uppercase: true,
         trim: true,
         match: [/^[A-Z]{3}$/, "Invalid IATA airport code (3 uppercase letters)"]
     },
-    to: {
+    destination: {
         type: String,
         required: [true, "Destination airport code is required"],
         uppercase: true,
